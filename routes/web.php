@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\TagController;
@@ -50,6 +51,16 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::get('/tag/{tag}/edit', [TagController::class, 'edit'])->name('tag.edit');
     Route::put('/tag/{tag}', [TagController::class, 'update'])->name('tag.update');
     Route::delete('/tag/{tag}', [TagController::class, 'destroy'])->name('tag.destroy');
+
+    // comment routes
+    Route::get('/comment', [CommentController::class, 'index'])->name('comment');
+    Route::get('/comment/{comment}', [CommentController::class, 'show'])->name('comment.show');
+    Route::get('/comment/{comment}/edit', [CommentController::class, 'edit'])->name('comment.edit');
+    Route::put('/comment/{comment}', [CommentController::class, 'update'])->name('comment.update');
+    Route::delete('/comment/{comment}', [CommentController::class, 'destroy'])->name('comment.destroy');
+    Route::get('/comment/{comment}/approve', [CommentController::class, 'approve'])->name('comment.approve');
+    Route::get('/comment/{comment}/spam', [CommentController::class, 'spam'])->name('comment.spam');
 });
 
 require __DIR__ . '/auth.php';
+
