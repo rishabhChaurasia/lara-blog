@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -30,7 +31,7 @@ class PostController extends Controller
     {
         $data = $request->validate([
             'title'            => 'required|string|max:255',
-            'slug'             => 'required|string|unique:posts, slug',
+            'slug'             => 'nullable|string|unique:posts,slug',
             'excerpt'          => 'nullable|string',
             'content'          => 'required|string',
             'featured_image'   => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
@@ -40,6 +41,8 @@ class PostController extends Controller
             'meta_description' => 'nullable|string',
             'meta_keywords'    => 'nullable|string',
         ]);
+
+        $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
 
         if ($request->hasFile('featured_image')) {
             $data['featured_image'] = $request->file('featured_image')->store('posts', 'public');
@@ -70,7 +73,7 @@ class PostController extends Controller
     {
         $data = $request->validate([
             'title'            => 'required|string|max:255',
-            'slug'             => 'required|string|unique:posts,slug,' . $post->id,
+            'slug'             => 'nullable|string|unique:posts,slug,' . $post->id,
             'excerpt'          => 'nullable|string',
             'content'          => 'required|string',
             'featured_image'   => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
@@ -80,6 +83,8 @@ class PostController extends Controller
             'meta_description' => 'nullable|string',
             'meta_keywords'    => 'nullable|string',
         ]);
+
+        $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
 
         if ($request->hasFile(('featured_image'))) {
             if ($post->featured_image) {
