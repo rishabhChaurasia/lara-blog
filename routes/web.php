@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +42,14 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::get('/category/{category}/edit', [CategoryController::class, 'edit'])->name('category.edit');
     Route::put('/category/{category}', [CategoryController::class, 'update'])->name('category.update');
     Route::delete('/category/{category}', [CategoryController::class, 'destroy'])->name('category.destroy');
+
+    // tag routes
+    Route::get('/tag', [TagController::class, 'index'])->name('tag');
+    Route::get('/tag/create', [TagController::class, 'create'])->name('tag.create');
+    Route::post('/tag', [TagController::class, 'store'])->name('tag.store');
+    Route::get('/tag/{tag}/edit', [TagController::class, 'edit'])->name('tag.edit');
+    Route::put('/tag/{tag}', [TagController::class, 'update'])->name('tag.update');
+    Route::delete('/tag/{tag}', [TagController::class, 'destroy'])->name('tag.destroy');
 });
 
 require __DIR__ . '/auth.php';
