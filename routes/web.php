@@ -6,12 +6,31 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\TagController;
+use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\PostController as FrontendPostController;
+use App\Http\Controllers\Frontend\CategoryController as FrontendCategoryController;
+use App\Http\Controllers\Frontend\TagController as FrontendTagController;
+use App\Http\Controllers\Frontend\CommentController as FrontendCommentController;
+use App\Http\Controllers\Frontend\SearchController;
+use App\Http\Controllers\Frontend\AuthorController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Frontend routes
+Route::get('/posts', [FrontendPostController::class, 'index'])->name('posts.index');
+Route::get('/posts/create', [FrontendPostController::class, 'create'])->middleware(['auth', 'author'])->name('posts.create');
+Route::post('/posts', [FrontendPostController::class, 'store'])->middleware(['auth', 'author'])->name('posts.store');
+Route::get('/posts/{post:slug}', [FrontendPostController::class, 'show'])->name('posts.show');
+Route::post('/posts/{post:slug}/comments', [FrontendCommentController::class, 'store'])
+    ->middleware('auth')
+    ->name('posts.comments.store');
+
+Route::get('/category/{category:slug}', [FrontendCategoryController::class, 'show'])->name('categories.show');
+Route::get('/tag/{tag:slug}', [FrontendTagController::class, 'show'])->name('tags.show');
+Route::get('/author/{user}', [AuthorController::class, 'show'])->name('authors.show');
+Route::get('/search', [SearchController::class, 'index'])->name('search');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
