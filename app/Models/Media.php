@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -13,9 +12,8 @@ class Media extends Model
         'file_path',
         'file_type',
         'file_size',
-        'alt_text'
+        'alt_text',
     ];
-
 
     public function user()
     {
