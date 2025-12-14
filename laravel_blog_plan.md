@@ -163,7 +163,7 @@
 - **Admin\CommentController**: Moderate comments
 - **Admin\MediaController**: Manage media library
 - **Admin\UserController**: Manage users
-- **Admin\SettingsController**: Site settings
+
 
 ## 5. Routes Structure
 

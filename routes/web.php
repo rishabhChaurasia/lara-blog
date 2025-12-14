@@ -70,6 +70,15 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::put('/media/{media}', [MediaController::class, 'update'])->name('media.update');
     Route::delete('/media/{media}', [MediaController::class, 'destroy'])->name('media.destroy');
     Route::get('/media/{media}', [MediaController::class, 'show'])->name('media.show');
+
+    // user routes
+    Route::get('/user', [DashboardController::class, 'user'])->name('user');
+    Route::get('/user/create', [DashboardController::class, 'userCreate'])->name('user.create');
+    Route::post('/user', [DashboardController::class, 'userStore'])->name('user.store');
+    Route::get('/user/{user}/edit', [DashboardController::class, 'userEdit'])->name('user.edit');
+    Route::put('/user/{user}', [DashboardController::class, 'userUpdate'])->name('user.update');
+    Route::delete('/user/{user}', [DashboardController::class, 'userDestroy'])->name('user.destroy');
+    Route::get('/user/{user}', [DashboardController::class, 'userShow'])->name('user.show');
 });
 
 require __DIR__ . '/auth.php';
