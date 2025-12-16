@@ -18,13 +18,15 @@ class PostController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('admin.post', compact('posts'));
+        return view('admin.post.index', compact('posts'));
     }
 
     public function create()
     {
+        $categories = \App\Models\Category::all();
+        $tags = \App\Models\Tag::all();
 
-        return view('admin.post.create');
+        return view('admin.post.create', compact('categories', 'tags'));
     }
 
     public function store(Request $request)
@@ -65,8 +67,10 @@ class PostController extends Controller
 
     public function edit(Post $post)
     {
+        $categories = \App\Models\Category::all();
+        $tags = \App\Models\Tag::all();
 
-        return view('admin.post.edit', compact('post'));
+        return view('admin.post.edit', compact('post', 'categories', 'tags'));
     }
 
     public function update(Post $post, Request $request)

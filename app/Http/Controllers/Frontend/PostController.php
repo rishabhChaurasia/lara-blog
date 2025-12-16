@@ -147,4 +147,98 @@ class PostController extends Controller
             'comments'
         ));
     }
+
+    /**
+     * Show the form for editing the specified post (for the post owner or admin).
+     */
+    public function edit(Post $post)
+    {
+        $user = Auth::user();
+
+        // Check if the current user is the post owner or an admin
+        if (!$user || ($user->id !== $post->user_id && $user->role !== 'admin')) {
+            abort(403, 'You do not have permission to edit this post.');
+        }
+
+        $categories = Category::all();
+        $tags = Tag::all();
+
+        return view('frontend.posts.edit', compact('post', 'categories', 'tags'));
+    }
+
+    /**
+     * Update the specified post in storage.
+     */
+    public function update(Request $request, Post $post)
+    {
+        $user = Auth::user();
+
+        // Check if the current user is the post owner or an admin
+        if (!$user || ($user->id !== $post->user_id && $user->role !== 'admin')) {
+            abort(403, 'You do not have permission to update this post.');
+        }
+
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'slug' => 'nullable|string|unique:posts,slug,' . $post->id,
+            'excerpt' => 'nullable|string',
+            'content' => 'required|string',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'category_ids' => 'array|exists:categories,id',
+            'tag_ids' => 'array|exists:tags,id',
+            'status' => 'in:draft,published' // Authors can submit as draft initially
+        ]);
+
+        $validatedData['slug'] = $validatedData['slug'] ?? Str::slug($validatedData['title']);
+
+        if ($user->role !== 'admin') {
+            $validatedData['status'] = 'draft'; // Authors can only save as draft, need admin approval for published
+        }
+
+        if ($request->hasFile('featured_image')) {
+            // Delete old image if exists
+            if ($post->featured_image) {
+                \Storage::disk('public')->delete($post->featured_image);
+            }
+
+            $path = $request->file('featured_image')->store('posts', 'public');
+            $validatedData['featured_image'] = $path;
+        }
+
+        $post->update($validatedData);
+
+        if (isset($validatedData['category_ids'])) {
+            $post->categories()->sync($validatedData['category_ids']);
+        }
+
+        if (isset($validatedData['tag_ids'])) {
+            $post->tags()->sync($validatedData['tag_ids']);
+        }
+
+        return redirect()->route('dashboard')
+            ->with('success', 'Post updated successfully!');
+    }
+
+    /**
+     * Remove the specified post from storage.
+     */
+    public function destroy(Post $post)
+    {
+        $user = Auth::user();
+
+        // Check if the current user is the post owner or an admin
+        if (!$user || ($user->id !== $post->user_id && $user->role !== 'admin')) {
+            abort(403, 'You do not have permission to delete this post.');
+        }
+
+        // Delete featured image if it exists
+        if ($post->featured_image) {
+            \Storage::disk('public')->delete($post->featured_image);
+        }
+
+        $post->delete();
+
+        return redirect()->route('dashboard')
+            ->with('success', 'Post deleted successfully!');
+    }
 }

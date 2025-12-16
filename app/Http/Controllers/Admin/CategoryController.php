@@ -14,7 +14,7 @@ class CategoryController extends Controller
 
         $categories = Category::paginate(10);
 
-        return view('admin.category', compact('categories'));
+        return view('admin.category.index', compact('categories'));
     }
 
     public function create()

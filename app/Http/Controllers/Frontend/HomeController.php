@@ -32,7 +32,7 @@ class HomeController extends Controller
 
         $recentCategories = Category::latest()->take(5)->get();
 
-        return view('home', compact(
+        return view('frontend.home', compact(
             'posts',
             'featuredPosts',
             'popularCategories',

@@ -8,6 +8,7 @@ use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -25,7 +26,7 @@ class DashboardController extends Controller
             'total_comments' => Comment::count(),
             'total_pending_comments' => Comment::where('status', 'pending')->count(),
             'total_categories' => Category::count(),
-            'recent_posts' => Post::with('author')->latest()->take(5)->get(),
+            'recent_posts' => Post::with('user')->latest()->take(5)->get(),
             'recent_comments' => Comment::with(['post', 'user'])->latest()->take(5)->get()
         ];
 
@@ -33,14 +34,14 @@ class DashboardController extends Controller
         $chartData = $this->getPostChartData($startDate, $endDate);
 
 
-        return view('admin.dashboard', compact('stats', 'chartData'));
+        return view('admin.dashboard.index', compact('stats', 'chartData'));
     }
 
 
     private function getPostChartData($startDate = null, $endDate = null)
     {
         $query = Post::selectRaw('status, DATE(created_at) as date, COUNT(*) as count')
-            ->groupBy('status', 'DATE(created_at)')
+            ->groupBy('status', DB::raw('DATE(created_at)'))
             ->orderBy('date');
 
         if ($startDate) {
@@ -48,7 +49,6 @@ class DashboardController extends Controller
         }
 
         if ($endDate) {
-
             $query->whereDate('created_at', '<=', $endDate);
         }
 

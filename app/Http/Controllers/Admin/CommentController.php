@@ -15,7 +15,7 @@ class CommentController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('admin.comment', compact('comments'));
+        return view('admin.comment.index', compact('comments'));
     }
 
     public function edit(Comment $comment)

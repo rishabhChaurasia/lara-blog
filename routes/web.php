@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\TagController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\PostController as FrontendPostController;
 use App\Http\Controllers\Frontend\CategoryController as FrontendCategoryController;
@@ -23,6 +24,15 @@ Route::get('/posts', [FrontendPostController::class, 'index'])->name('posts.inde
 Route::get('/posts/create', [FrontendPostController::class, 'create'])->middleware(['auth', 'author'])->name('posts.create');
 Route::post('/posts', [FrontendPostController::class, 'store'])->middleware(['auth', 'author'])->name('posts.store');
 Route::get('/posts/{post:slug}', [FrontendPostController::class, 'show'])->name('posts.show');
+Route::get('/posts/{post:slug}/edit', [FrontendPostController::class, 'edit'])
+    ->middleware(['auth', 'author'])
+    ->name('posts.edit');
+Route::put('/posts/{post:slug}', [FrontendPostController::class, 'update'])
+    ->middleware(['auth', 'author'])
+    ->name('posts.update');
+Route::delete('/posts/{post:slug}', [FrontendPostController::class, 'destroy'])
+    ->middleware(['auth', 'author'])
+    ->name('posts.destroy');
 Route::post('/posts/{post:slug}/comments', [FrontendCommentController::class, 'store'])
     ->middleware('auth')
     ->name('posts.comments.store');
@@ -32,9 +42,11 @@ Route::get('/tag/{tag:slug}', [FrontendTagController::class, 'show'])->name('tag
 Route::get('/author/{user}', [AuthorController::class, 'show'])->name('authors.show');
 Route::get('/search', [SearchController::class, 'index'])->name('search');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+use App\Http\Controllers\AuthorDashboardController;
+
+Route::get('/dashboard', [AuthorDashboardController::class, 'index'])
+    ->middleware(['auth', 'verified', 'author'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -91,13 +103,13 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::get('/media/{media}', [MediaController::class, 'show'])->name('media.show');
 
     // user routes
-    Route::get('/user', [DashboardController::class, 'user'])->name('user');
-    Route::get('/user/create', [DashboardController::class, 'userCreate'])->name('user.create');
-    Route::post('/user', [DashboardController::class, 'userStore'])->name('user.store');
-    Route::get('/user/{user}/edit', [DashboardController::class, 'userEdit'])->name('user.edit');
-    Route::put('/user/{user}', [DashboardController::class, 'userUpdate'])->name('user.update');
-    Route::delete('/user/{user}', [DashboardController::class, 'userDestroy'])->name('user.destroy');
-    Route::get('/user/{user}', [DashboardController::class, 'userShow'])->name('user.show');
+    Route::get('/user', [UserController::class, 'index'])->name('user');
+    Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
+    Route::post('/user', [UserController::class, 'store'])->name('user.store');
+    Route::get('/user/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
+    Route::put('/user/{user}', [UserController::class, 'update'])->name('user.update');
+    Route::delete('/user/{user}', [UserController::class, 'destroy'])->name('user.destroy');
+    Route::get('/user/{user}', [UserController::class, 'show'])->name('user.show');
 });
 
 require __DIR__ . '/auth.php';

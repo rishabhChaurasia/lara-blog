@@ -18,7 +18,7 @@ class MediaController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('admin.media', compact('medias'));
+        return view('admin.media.index', compact('medias'));
     }
 
     public function create()
